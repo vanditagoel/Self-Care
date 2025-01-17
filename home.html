@@ -188,8 +188,10 @@
         // Example JavaScript for interactivity
         document.querySelectorAll('.button').forEach(button => {
             button.addEventListener('click', (event) => {
-                event.preventDefault();
-                alert('This feature is coming soon!');
+                if (button.getAttribute('href') === '#') {
+                    event.preventDefault();
+                    alert('This feature is coming soon!');
+                }
             });
         });
 
