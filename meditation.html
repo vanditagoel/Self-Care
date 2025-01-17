@@ -42,6 +42,33 @@
             font-weight: bold;
             margin: 20px;
         }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            margin-top: 10px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #4caf50;
+            width: 0%;
+        }
+        .audio-controls {
+            margin: 20px 0;
+        }
+        #breathing-instructions {
+            margin-top: 20px;
+            display: none;
+            font-size: 1.2rem;
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .reset-btn {
+            margin-top: 20px;
+            background-color: #ff5722;
+        }
     </style>
 </head>
 <body>
@@ -57,33 +84,92 @@
         </div>
 
         <div class="meditation-timer" id="meditation-timer">
-            <!-- Timer will be displayed here -->
             <span>Time Remaining: <span id="time">00:00</span></span>
+        </div>
+
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
         </div>
 
         <button class="button" id="start-breathing">Start Breathing Exercise</button>
         <button class="button" id="start-meditation">Start Meditation</button>
+
+        <div id="breathing-instructions">
+            <h3>Breathing Instructions</h3>
+            <ul>
+                <li>Inhale slowly for 4 seconds.</li>
+                <li>Hold for 4 seconds.</li>
+                <li>Exhale slowly for 4 seconds.</li>
+                <li>Repeat this cycle until the session ends.</li>
+            </ul>
+        </div>
+
+        <!-- Background music and guided meditation audio -->
+        <div class="audio-controls">
+            <button class="button" id="play-music">Play Music</button>
+            <button class="button" id="pause-music">Pause Music</button>
+            <button class="button" id="guided-meditation">Play Guided Meditation</button>
+        </div>
+
+        <button class="button reset-btn" id="reset-timer">Reset Timer</button>
     </div>
+
+    <!-- Background music -->
+    <audio id="background-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Guided meditation audio -->
+    <audio id="guided-meditation-audio">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
 
     <script>
         let timer;
         let isBreathingExercise = false;
-        let remainingTime = 300; // 5 minutes in seconds (for meditation)
+        let remainingTime = 300; // Default 5 minutes for meditation
+        let progressBar = document.getElementById('progress');
+        let audio = document.getElementById('background-music');
+        let guidedMeditationAudio = document.getElementById('guided-meditation-audio');
+        let isMusicPlaying = false;
 
         // Start Breathing Exercise
-        document.getElementById('start-breathing').addEventListener('click', () => {
+        document.getElementById('start-breathing').addEventListener('click', function() {
             startBreathingExercise();
         });
 
-        // Start Meditation Timer
-        document.getElementById('start-meditation').addEventListener('click', () => {
+        // Start Meditation
+        document.getElementById('start-meditation').addEventListener('click', function() {
             startMeditation();
+        });
+
+        // Play background music
+        document.getElementById('play-music').addEventListener('click', function() {
+            playMusic();
+        });
+
+        // Pause background music
+        document.getElementById('pause-music').addEventListener('click', function() {
+            pauseMusic();
+        });
+
+        // Play guided meditation
+        document.getElementById('guided-meditation').addEventListener('click', function() {
+            playGuidedMeditation();
+        });
+
+        // Reset Timer
+        document.getElementById('reset-timer').addEventListener('click', function() {
+            resetTimer();
         });
 
         // Breathing Exercise Logic
         function startBreathingExercise() {
             isBreathingExercise = true;
             remainingTime = 120; // 2 minutes for breathing
+            document.getElementById('breathing-instructions').style.display = 'block';
             clearInterval(timer);
             timer = setInterval(updateTimer, 1000);
         }
@@ -92,15 +178,20 @@
         function startMeditation() {
             isBreathingExercise = false;
             remainingTime = 300; // 5 minutes for meditation
+            document.getElementById('breathing-instructions').style.display = 'none';
             clearInterval(timer);
             timer = setInterval(updateTimer, 1000);
         }
 
-        // Update Timer Display
+        // Update Timer Display and Progress Bar
         function updateTimer() {
             let minutes = Math.floor(remainingTime / 60);
             let seconds = remainingTime % 60;
             document.getElementById('time').textContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            
+            // Update progress bar
+            let progress = ((isBreathingExercise ? 120 : 300) - remainingTime) / (isBreathingExercise ? 120 : 300) * 100;
+            progressBar.style.width = progress + '%';
 
             if (remainingTime > 0) {
                 remainingTime--;
@@ -108,6 +199,33 @@
                 clearInterval(timer);
                 alert(isBreathingExercise ? "Breathing exercise is complete!" : "Meditation session is over!");
             }
+        }
+
+        // Play Music
+        function playMusic() {
+            if (!isMusicPlaying) {
+                audio.play();
+                isMusicPlaying = true;
+            }
+        }
+
+        // Pause Music
+        function pauseMusic() {
+            audio.pause();
+            isMusicPlaying = false;
+        }
+
+        // Play Guided Meditation
+        function playGuidedMeditation() {
+            guidedMeditationAudio.play();
+        }
+
+        // Reset Timer
+        function resetTimer() {
+            clearInterval(timer);
+            remainingTime = isBreathingExercise ? 120 : 300;
+            document.getElementById('time').textContent = '00:00';
+            progressBar.style.width = '0%';
         }
     </script>
 </body>
