@@ -9,7 +9,7 @@
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
+            background-color: #e6e6fa; /* Lavender background */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,69 +17,128 @@
         }
 
         .container {
-            background-color: white;
+            background-color: #d1e7f0; /* Baby blue background */
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            width: 350px;
+            text-align: center;
         }
 
-        h2 {
-            text-align: center;
+        h2, h3 {
             margin-bottom: 20px;
+            font-weight: 600;
+            color: #333;
         }
 
         .input-field {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 15px;
-            border: 2px solid #4caf50;
+            border: 2px solid #7ec8e3; /* Baby blue border */
             border-radius: 5px;
             font-size: 16px;
+            box-sizing: border-box;
+            background-color: white;
         }
 
         .button {
             width: 100%;
-            padding: 12px;
-            background-color: #4caf50;
+            padding: 14px;
+            background-color: #7ec8e3;
             color: white;
             border: none;
             border-radius: 5px;
             font-weight: 600;
             cursor: pointer;
             font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
         }
 
         .button:hover {
-            background-color: #45a049;
+            background-color: #6ab0cc;
         }
 
         .switch-link {
-            text-align: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .switch-link a {
-            color: #4caf50;
+            color: #7ec8e3;
             text-decoration: none;
+            font-weight: 500;
+        }
+
+        .switch-link a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #ff4444;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        #otp-verification {
+            margin-top: 20px;
+        }
+
+        .resend-button {
+            background-color: transparent;
+            color: #7ec8e3;
+            border: 1px solid #7ec8e3;
+        }
+
+        .resend-button:hover {
+            background-color: #f0f7fa;
+        }
+
+        .loading {
+            display: none;
+            margin: 10px 0;
+            color: #666;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2 id="form-title">Login</h2>
+        
+        <!-- Login Form -->
         <form id="login-form" style="display: block;">
-            <input type="text" class="input-field" placeholder="Username" required>
-            <input type="password" class="input-field" placeholder="Password" required>
+            <input type="text" class="input-field" id="login-username" placeholder="Username" required>
+            <input type="password" class="input-field" id="login-password" placeholder="Password" required>
             <button type="submit" class="button">Login</button>
+            <div id="login-error" class="error"></div>
         </form>
 
+        <!-- Signup Form -->
         <form id="signup-form" style="display: none;">
-            <input type="text" class="input-field" placeholder="Username" required>
-            <input type="email" class="input-field" placeholder="Email" required>
-            <input type="password" class="input-field" placeholder="Password" required>
+            <input type="text" class="input-field" id="signup-username" placeholder="Username" required>
+            <input type="email" class="input-field" id="signup-email" placeholder="Email" required>
+            <input type="password" class="input-field" id="signup-password" placeholder="Password" required>
+            <input type="password" class="input-field" id="signup-rePassword" placeholder="Re-enter Password" required>
             <button type="submit" class="button">Sign Up</button>
+            <div id="signup-error" class="error"></div>
         </form>
+
+        <!-- OTP Verification Form -->
+        <div id="otp-verification" style="display: none;">
+            <h3>Email Verification</h3>
+            <p class="info-text">Please enter the 4-digit OTP sent to your email</p>
+            <input type="text" class="input-field" id="otp-input" maxlength="4" placeholder="Enter OTP" required>
+            <button type="button" class="button" id="verify-otp-btn">Verify OTP</button>
+            <button type="button" class="button resend-button" id="resend-otp-btn">Resend OTP</button>
+            <div id="otp-error" class="error"></div>
+            <div class="loading" id="loading-indicator">Sending OTP...</div>
+        </div>
 
         <div class="switch-link">
             <span id="switch-text">Don't have an account? <a href="#" id="switch-form-link">Sign Up</a></span>
@@ -87,41 +146,213 @@
     </div>
 
     <script>
-        // Switch between Login and Signup forms
+        // DOM Elements
         const switchLink = document.getElementById('switch-form-link');
         const formTitle = document.getElementById('form-title');
         const loginForm = document.getElementById('login-form');
         const signupForm = document.getElementById('signup-form');
+        const otpVerification = document.getElementById('otp-verification');
         const switchText = document.getElementById('switch-text');
+        const loadingIndicator = document.getElementById('loading-indicator');
 
+        // Function to show loading state
+        function showLoading() {
+            loadingIndicator.style.display = 'block';
+        }
+
+        // Function to hide loading state
+        function hideLoading() {
+            loadingIndicator.style.display = 'none';
+        }
+
+        // Function to show error message
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        // Function to clear error messages
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(error => {
+                error.textContent = '';
+                error.style.display = 'none';
+            });
+        }
+
+        // Switch between Login and Signup forms
         switchLink.addEventListener('click', (e) => {
             e.preventDefault();
+            clearErrors();
+            
             if (loginForm.style.display === 'none') {
-                // Switch to Login form
                 loginForm.style.display = 'block';
                 signupForm.style.display = 'none';
+                otpVerification.style.display = 'none';
                 formTitle.textContent = 'Login';
                 switchText.innerHTML = "Don't have an account? <a href='#' id='switch-form-link'>Sign Up</a>";
             } else {
-                // Switch to Signup form
                 loginForm.style.display = 'none';
                 signupForm.style.display = 'block';
+                otpVerification.style.display = 'none';
                 formTitle.textContent = 'Sign Up';
                 switchText.innerHTML = "Already have an account? <a href='#' id='switch-form-link'>Login</a>";
             }
+            
+            // Update the switch link event listener
+            document.getElementById('switch-form-link').addEventListener('click', switchLink.onclick);
         });
 
-        // Handle form submissions
-        document.getElementById('login-form').addEventListener('submit', (e) => {
+        // Handle Login Form Submission
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Simulate successful login, then redirect to the home page
-            window.location.href = "home.html";
+            clearErrors();
+
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch('http://localhost:5000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Login successful!');
+                    window.location.href = "home.html";  // Redirect to home page
+                } else {
+                    showError('login-error', data.error || 'Login failed');
+                }
+            } catch (error) {
+                showError('login-error', 'Something went wrong. Please try again.');
+            }
         });
 
-        document.getElementById('signup-form').addEventListener('submit', (e) => {
+        // Handle Signup Form Submission
+        signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Simulate successful signup, then redirect to the home page
-            window.location.href = "home.html";
+            clearErrors();
+
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const rePassword = document.getElementById('signup-rePassword').value;
+
+            if (password !== rePassword) {
+                showError('signup-error', "Passwords don't match!");
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('http://localhost:5000/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, email, password, rePassword })
+                });
+
+                const data = await response.json();
+
+                if (data.message === "OTP sent to email") {
+                    signupForm.style.display = 'none';
+                    otpVerification.style.display = 'block';
+                    localStorage.setItem('verificationEmail', email);
+                    localStorage.setItem('verificationUsername', username);
+                } else {
+                    showError('signup-error', data.error || 'Signup failed');
+                }
+            } catch (error) {
+                showError('signup-error', 'Something went wrong. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Handle OTP Verification
+        document.getElementById('verify-otp-btn').addEventListener('click', async () => {
+            clearErrors();
+            const otp = document.getElementById('otp-input').value;
+            const email = localStorage.getItem('verificationEmail');
+
+            if (!otp || otp.length !== 4) {
+                showError('otp-error', 'Please enter a valid 4-digit OTP');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('http://localhost:5000/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, otp })
+                });
+
+                const data = await response.json();
+
+                if (data.message === "User registered successfully") {
+                    alert('Registration successful! Please login.');
+                    localStorage.removeItem('verificationEmail');
+                    localStorage.removeItem('verificationUsername');
+                    otpVerification.style.display = 'none';
+                    loginForm.style.display = 'block';
+                    formTitle.textContent = 'Login';
+                    switchText.innerHTML = "Don't have an account? <a href='#' id='switch-form-link'>Sign Up</a>";
+                    document.getElementById('switch-form-link').addEventListener('click', switchLink.onclick);
+                } else {
+                    showError('otp-error', data.error || 'Invalid OTP');
+                }
+            } catch (error) {
+                showError('otp-error', 'Something went wrong. Please try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        // Handle Resend OTP
+        document.getElementById('resend-otp-btn').addEventListener('click', async () => {
+            clearErrors();
+            const email = localStorage.getItem('verificationEmail');
+            const username = localStorage.getItem('verificationUsername');
+
+            if (!email || !username) {
+                showError('otp-error', 'Session expired. Please sign up again.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('http://localhost:5000/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, username, resend: true })
+                });
+
+                const data = await response.json();
+
+                if (data.message === "OTP sent to email") {
+                    alert('New OTP has been sent to your email');
+                } else {
+                    showError('otp-error', data.error || 'Failed to resend OTP');
+                }
+            } catch (error) {
+                showError('otp-error', 'Something went wrong. Please try again.');
+            } finally {
+                hideLoading();
+            }
         });
     </script>
 </body>
