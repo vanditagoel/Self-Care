@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Intake Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            font-size: 2rem;
+            color: #4caf50;
+        }
+
+        .input-water {
+            padding: 10px;
+            font-size: 1rem;
+            width: 60%;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .submit-water {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .submit-water:hover {
+            background-color: #45a049;
+        }
+
+        .total-water {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="header">Water Intake Tracker</h1>
+
+        <!-- Input form for water intake -->
+        <input type="number" class="input-water" id="waterAmount" placeholder="Amount in Glasses" required>
+        <button class="submit-water" onclick="addWaterIntake()">Add Water</button>
+
+        <div class="total-water">
+            <h3>Total Water Intake Today:</h3>
+            <p id="totalWaterAmount">0 Glasses</p>
+        </div>
+    </div>
+
+    <script>
+        // Get today's date as a string (e.g., '2025-01-17')
+        const today = new Date().toISOString().split('T')[0];
+
+        // Retrieve the stored date and water intake from localStorage
+        const storedDate = localStorage.getItem('date');
+        let totalWater = localStorage.getItem('totalWater') ? parseInt(localStorage.getItem('totalWater')) : 0;
+
+        // If the date in localStorage doesn't match today's date, reset the water intake
+        if (storedDate !== today) {
+            totalWater = 0; // Reset the water intake for the new day
+            localStorage.setItem('date', today);  // Store today's date in localStorage
+        }
+
+        // Function to update the displayed total water intake
+        function updateWaterIntake() {
+            document.getElementById('totalWaterAmount').textContent = totalWater + " Glasses";
+        }
+
+        // Function to add water intake
+        function addWaterIntake() {
+            const waterAmount = document.getElementById('waterAmount').value;
+            if (waterAmount && waterAmount > 0) {
+                totalWater += parseInt(waterAmount);
+                localStorage.setItem('totalWater', totalWater);  // Save updated total to localStorage
+                updateWaterIntake();  // Update the display
+                document.getElementById('waterAmount').value = '';  // Clear the input field
+            } else {
+                alert("Please enter a valid amount!");
+            }
+        }
+
+        // Initial display update
+        updateWaterIntake();
+    </script>
+
+</body>
+</html>

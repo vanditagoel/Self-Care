@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .button {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .fitness-container {
+            padding: 20px;
+            text-align: center;
+        }
+        .input-container {
+            margin-bottom: 20px;
+        }
+        .input-container input {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 200px;
+            margin: 0 10px;
+        }
+        .log {
+            margin-top: 20px;
+        }
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .log-table th, .log-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            margin-top: 20px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #4caf50;
+            width: 0%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Fitness Tracker</h1>
+    </div>
+
+    <div class="fitness-container">
+        <div class="input-container">
+            <label for="activity-type">Activity Type:</label>
+            <input type="text" id="activity-type" placeholder="e.g., Running">
+            <label for="duration">Duration (min):</label>
+            <input type="number" id="duration" placeholder="Time in minutes">
+            <label for="calories">Calories Burned:</label>
+            <input type="number" id="calories" placeholder="Calories burned">
+            <label for="steps">Steps Taken:</label>
+            <input type="number" id="steps" placeholder="Steps taken">
+            <button class="button" id="log-activity">Log Activity</button>
+        </div>
+
+        <!-- Progress Bars for Goals -->
+        <div class="progress-bar">
+            <div id="steps-progress" class="progress"></div>
+        </div>
+        <p>Steps Goal Progress</p>
+        <div class="progress-bar">
+            <div id="calories-progress" class="progress"></div>
+        </div>
+        <p>Calories Goal Progress</p>
+
+        <div class="log">
+            <h3>Activity Log</h3>
+            <table class="log-table" id="activity-log">
+                <thead>
+                    <tr>
+                        <th>Activity</th>
+                        <th>Duration (min)</th>
+                        <th>Calories</th>
+                        <th>Steps</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Activities will be listed here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let activityLog = [];
+        let stepsGoal = 10000; // Example goal: 10,000 steps
+        let caloriesGoal = 500; // Example goal: 500 calories
+
+        // Get DOM elements
+        let logActivityButton = document.getElementById('log-activity');
+        let activityTypeInput = document.getElementById('activity-type');
+        let durationInput = document.getElementById('duration');
+        let caloriesInput = document.getElementById('calories');
+        let stepsInput = document.getElementById('steps');
+        let stepsProgressBar = document.getElementById('steps-progress');
+        let caloriesProgressBar = document.getElementById('calories-progress');
+        let activityLogTable = document.getElementById('activity-log').getElementsByTagName('tbody')[0];
+
+        // Add activity to log
+        logActivityButton.addEventListener('click', function() {
+            let activity = {
+                type: activityTypeInput.value,
+                duration: durationInput.value,
+                calories: caloriesInput.value,
+                steps: stepsInput.value,
+            };
+
+            // Add to the activity log
+            activityLog.push(activity);
+
+            // Display activity log
+            displayActivityLog();
+
+            // Update progress bars
+            updateProgress();
+
+            // Clear input fields
+            activityTypeInput.value = '';
+            durationInput.value = '';
+            caloriesInput.value = '';
+            stepsInput.value = '';
+        });
+
+        // Display Activity Log
+        function displayActivityLog() {
+            // Clear existing table rows
+            activityLogTable.innerHTML = '';
+
+            // Add each activity as a row in the table
+            activityLog.forEach(function(activity) {
+                let row = activityLogTable.insertRow();
+                row.insertCell(0).textContent = activity.type;
+                row.insertCell(1).textContent = activity.duration;
+                row.insertCell(2).textContent = activity.calories;
+                row.insertCell(3).textContent = activity.steps;
+            });
+        }
+
+        // Update progress bars for steps and calories
+        function updateProgress() {
+            let totalSteps = activityLog.reduce((total, activity) => total + parseInt(activity.steps), 0);
+            let totalCalories = activityLog.reduce((total, activity) => total + parseInt(activity.calories), 0);
+
+            // Calculate percentage for steps and calories
+            let stepsPercentage = (totalSteps / stepsGoal) * 100;
+            let caloriesPercentage = (totalCalories / caloriesGoal) * 100;
+
+            // Update progress bars
+            stepsProgressBar.style.width = stepsPercentage > 100 ? '100%' : stepsPercentage + '%';
+            caloriesProgressBar.style.width = caloriesPercentage > 100 ? '100%' : caloriesPercentage + '%';
+        }
+    </script>
+</body>
+</html>
