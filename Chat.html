@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Chat</title>
+    <title>AI Chat with API</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        /* Styles are the same as the improved design version above */
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f0f4f8;
@@ -103,7 +104,7 @@
         #reset-chat {
             margin-top: 10px;
             padding: 10px 20px;
-            background-color: #f44336; /* Red for Reset */
+            background-color: #f44336;
             color: white;
             border: none;
             border-radius: 50px;
@@ -139,63 +140,62 @@
     </div>
 
     <script>
-        let userMessages = [];
-        let aiResponses = [];
+        const apiKey = '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' ; // Replace with your OpenAI API Key
+        const apiEndpoint = 'https://api.openai.com/v1/chat/completions';
 
-        // Function to send message and get AI response (mocked for now)
-        function sendMessage() {
+        // Function to send message and get AI response
+        async function sendMessage() {
             const userMessage = document.getElementById('user-input').value;
             if (!userMessage) return;
 
             // Add user message to the chat
             addMessage(userMessage, 'user');
-
-            // Clear the input field
             document.getElementById('user-input').value = '';
 
-            // Get AI response (for now, mocked)
-            const aiMessage = "This is a mock AI response."; // Replace with actual AI response
-            addMessage(aiMessage, 'ai');
+            // Display "typing" message
+            const typingMessage = addMessage('Typing...', 'ai');
 
-            // Store the message history
-            userMessages.push(userMessage);
-            aiResponses.push(aiMessage);
+            try {
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4',
+                        messages: [{ role: 'user', content: userMessage }]
+                    })
+                });
+
+                const data = await response.json();
+                const aiMessage = data.choices[0].message.content;
+
+                // Replace "Typing..." with the actual AI response
+                typingMessage.textContent = aiMessage;
+            } catch (error) {
+                typingMessage.textContent = 'Error: Could not fetch response.';
+                console.error(error);
+            }
         }
 
-        // Function to add message to the chat container
+        // Function to add a message to the chat
         function addMessage(message, sender) {
             const messageElement = document.createElement('div');
-            messageElement.classList.add('chat-message');
-            messageElement.classList.add(sender);
+            messageElement.classList.add('chat-message', sender);
             messageElement.textContent = message;
             document.getElementById('chat-messages').appendChild(messageElement);
-            // Scroll to the bottom
             document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+            return messageElement;
         }
 
-        // Function to reset the chat history
+        // Function to reset the chat
         function resetChat() {
-            const chatContainer = document.getElementById('chat-messages');
-            chatContainer.innerHTML = ''; // Clears all chat messages
-
-            // Add a reset message after clearing
-            const resetMessage = document.createElement('div');
-            resetMessage.classList.add('chat-message', 'ai');
-            resetMessage.textContent = 'Chat has been reset! Start a new conversation.';
-            chatContainer.appendChild(resetMessage);
-
-            // Reset stored conversation history
-            userMessages = [];
-            aiResponses = [];
-
-            // Clear the input field
-            document.getElementById('user-input').value = '';
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.innerHTML = '<div class="chat-message ai">Chat has been reset. How can I help you today?</div>';
         }
 
-        // Event listener for the send button
         document.getElementById('send-button').addEventListener('click', sendMessage);
-
-        // Event listener for the reset button
         document.getElementById('reset-chat').addEventListener('click', resetChat);
     </script>
 </body>
