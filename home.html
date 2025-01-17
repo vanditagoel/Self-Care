@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Care App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background-color: #4caf50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header img {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            max-width: 80px;
+        }
+
+        .profile-button {
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            background-color: #ffffff;
+            color: #4caf50;
+            border: 2px solid #4caf50;
+            border-radius: 20px;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .profile-button:hover {
+            background-color: #4caf50;
+            color: #ffffff;
+        }
+
+        .affirmation {
+            font-size: 1.2rem;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .affirmation img {
+            max-width: 100px;
+            border-radius: 50%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin: 20px;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card img {
+            max-width: 100px;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            color: white;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="#" class="profile-button">Profile</a>
+        <h1>Welcome to Your Self-Care App</h1>
+        <p>Track your wellness, stay motivated, and grow daily!</p>
+        <img src="https://via.placeholder.com/80" alt="Companion waving">
+    </div>
+
+    <div class="affirmation" id="affirmation">
+        <img src="https://via.placeholder.com/100" alt="Companion playful">
+        <span id="affirmation-text"><!-- Affirmation will be injected here by JavaScript --></span>
+    </div>
+
+    <div class="container">
+        <h2>Explore Features</h2>
+        <div class="grid">
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Meditation">
+                <h3>Meditation</h3>
+                <p>Relax your mind with guided meditation sessions.</p>
+                <a href="#" class="button">Start Now</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Fitness">
+                <h3>Fitness</h3>
+                <p>Track your workouts and achieve your fitness goals.</p>
+                <a href="#" class="button">Track Fitness</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Journaling">
+                <h3>Journaling</h3>
+                <p>Reflect on your day and keep a daily journal.</p>
+                <a href="#" class="button">Write Journal</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Nutrition">
+                <h3>Nutrition</h3>
+                <p>Plan healthy meals and track your nutrition.</p>
+                <a href="#" class="button">Plan Meals</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Water Intake">
+                <h3>Water Intake Tracker</h3>
+                <p>Monitor your daily water consumption and stay hydrated.</p>
+                <a href="#" class="button">Track Water</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Chat Companion">
+                <h3>Chat with Companion</h3>
+                <p>Talk with your companion for encouragement and motivation.</p>
+                <a href="#" class="button">Start Chat</a>
+            </div>
+
+            <div class="card">
+                <img src="https://via.placeholder.com/100" alt="Pomodoro">
+                <h3>Pomodoro Timer</h3>
+                <p>Boost productivity with focus sessions using the Pomodoro technique.</p>
+                <a href="#" class="button">Start Timer</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Example JavaScript for interactivity
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                alert('This feature is coming soon!');
+            });
+        });
+
+        // Affirmations
+        const affirmations = [
+            "You are capable of amazing things!",
+            "Believe in yourself and all that you are.",
+            "Every day is a new beginning.",
+            "You are stronger than you think.",
+            "Be proud of how far you've come.",
+            "You are loved and appreciated.",
+            "Your potential is limitless."
+        ];
+
+        const affirmationElement = document.getElementById('affirmation-text');
+        const randomAffirmation = affirmations[Math.floor(Math.random() * affirmations.length)];
+        affirmationElement.textContent = randomAffirmation;
+    </script>
+</body>
+</html>
