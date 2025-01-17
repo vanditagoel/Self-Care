@@ -69,6 +69,17 @@
             margin-top: 20px;
             background-color: #ff5722;
         }
+        .input-container {
+            margin-bottom: 20px;
+        }
+        .input-container input {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: 80px;
+            margin: 0 10px;
+        }
     </style>
 </head>
 <body>
@@ -78,6 +89,13 @@
     </div>
 
     <div class="meditation-container">
+        <div class="input-container">
+            <label for="breathing-time">Breathing Exercise Time (min):</label>
+            <input type="number" id="breathing-time" value="2" min="1">
+            <label for="meditation-time">Meditation Time (min):</label>
+            <input type="number" id="meditation-time" value="5" min="1">
+        </div>
+
         <div class="meditation-instructions">
             <h3>Let's Begin the Meditation and Breathing Exercise</h3>
             <p>Follow along with the breathing instructions below to calm your mind.</p>
@@ -135,6 +153,10 @@
         let guidedMeditationAudio = document.getElementById('guided-meditation-audio');
         let isMusicPlaying = false;
 
+        // Get user input for time
+        let breathingTimeInput = document.getElementById('breathing-time');
+        let meditationTimeInput = document.getElementById('meditation-time');
+
         // Start Breathing Exercise
         document.getElementById('start-breathing').addEventListener('click', function() {
             startBreathingExercise();
@@ -165,19 +187,19 @@
             resetTimer();
         });
 
-        // Breathing Exercise Logic
+        // Start Breathing Exercise with user input time
         function startBreathingExercise() {
             isBreathingExercise = true;
-            remainingTime = 120; // 2 minutes for breathing
+            remainingTime = breathingTimeInput.value * 60; // Convert minutes to seconds
             document.getElementById('breathing-instructions').style.display = 'block';
             clearInterval(timer);
             timer = setInterval(updateTimer, 1000);
         }
 
-        // Meditation Logic
+        // Start Meditation with user input time
         function startMeditation() {
             isBreathingExercise = false;
-            remainingTime = 300; // 5 minutes for meditation
+            remainingTime = meditationTimeInput.value * 60; // Convert minutes to seconds
             document.getElementById('breathing-instructions').style.display = 'none';
             clearInterval(timer);
             timer = setInterval(updateTimer, 1000);
@@ -190,7 +212,8 @@
             document.getElementById('time').textContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
             
             // Update progress bar
-            let progress = ((isBreathingExercise ? 120 : 300) - remainingTime) / (isBreathingExercise ? 120 : 300) * 100;
+            let progress = ((isBreathingExercise ? breathingTimeInput.value * 60 : meditationTimeInput.value * 60) - remainingTime) /
+                            (isBreathingExercise ? breathingTimeInput.value * 60 : meditationTimeInput.value * 60) * 100;
             progressBar.style.width = progress + '%';
 
             if (remainingTime > 0) {
@@ -223,9 +246,8 @@
         // Reset Timer
         function resetTimer() {
             clearInterval(timer);
-            remainingTime = isBreathingExercise ? 120 : 300;
-            document.getElementById('time').textContent = '00:00';
-            progressBar.style.width = '0%';
+            remainingTime = isBreathingExercise ? breathingTimeInput.value * 60 : meditationTimeInput.value * 60;
+            updateTimer();
         }
     </script>
 </body>
